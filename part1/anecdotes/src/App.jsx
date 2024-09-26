@@ -2,6 +2,33 @@ import { useState } from "react";
 
 const Button = ({ handler, text }) => <button onClick={handler}>{text}</button>;
 
+const Anecdote = ({ text, votes }) => {
+  return (
+    <p>
+      {text} <br />
+      has {votes} votes
+    </p>
+  );
+};
+
+const MostVoted = ({ anecdotes, points }) => {
+  const totalVotes = points.reduce((a, b) => a + b);
+
+  if (totalVotes === 0) {
+    return <h1> </h1>;
+  } else {
+    const maxVotes = Math.max(...points);
+    const maxVotedIndex = points.indexOf(maxVotes);
+
+    return (
+      <div>
+        <h1> Anecdote with most votes </h1>
+        <Anecdote text={anecdotes[maxVotedIndex]} votes={maxVotes} />
+      </div>
+    );
+  }
+};
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -23,22 +50,23 @@ const App = () => {
     return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
   };
 
-  const handleSelect = () => {
-    setSelected(getRandomIntInclusive(0, anecdotes.length));
-  };
-
   const handleVote = () => {
     const copy = [...points];
     copy[selected] += 1;
     setPoints(copy);
   };
 
+  const handleSelect = () => {
+    setSelected(getRandomIntInclusive(0, anecdotes.length));
+  };
+
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p> has {points[selected]} votes</p>
+      <h1> Anecdote of the day </h1>
+      <Anecdote text={anecdotes[selected]} votes={points[selected]} />
       <Button handler={handleVote} text="vote" />
       <Button handler={handleSelect} text="next anecdote" />
+      <MostVoted points={points} anecdotes={anecdotes} />
     </div>
   );
 };
