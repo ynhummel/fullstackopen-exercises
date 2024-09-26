@@ -4,11 +4,29 @@ const Button = ({ handleClick, text }) => {
   return <button onClick={handleClick}>{text}</button>;
 };
 
-const Stats = ({ text, votes }) => {
+const StatsText = ({ text, votes }) => {
   return (
-    <p>
-      {text} {votes}
-    </p>
+    <>
+      {text} {votes} <br />
+    </>
+  );
+};
+
+const Stats = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad;
+  const average = (good - bad) / all;
+  const positive = (good / all) * 100;
+
+  return (
+    <div>
+      <h1>statistics</h1>
+      <StatsText text="good" votes={good} />
+      <StatsText text="neutral" votes={neutral} />
+      <StatsText text="bad" votes={bad} />
+      <StatsText text="all" votes={all} />
+      average {average} <br />
+      positive {positive} %
+    </div>
   );
 };
 
@@ -26,11 +44,7 @@ const App = () => {
       <Button handleClick={handleClick(good, setGood)} text="good" />
       <Button handleClick={handleClick(neutral, setNeutral)} text="neutral" />
       <Button handleClick={handleClick(bad, setBad)} text="bad" />
-
-      <h1>statistics</h1>
-      <Stats text="good" votes={good} />
-      <Stats text="neutral" votes={neutral} />
-      <Stats text="bad" votes={bad} />
+      <Stats good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
