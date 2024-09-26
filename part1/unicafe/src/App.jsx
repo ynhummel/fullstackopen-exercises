@@ -6,9 +6,10 @@ const Button = ({ handleClick, text }) => {
 
 const StatistcLine = ({ text, votes }) => {
   return (
-    <>
-      {text} {votes}
-    </>
+    <tr>
+      <td>{text}</td>
+      <td>{votes}</td>
+    </tr>
   );
 };
 
@@ -29,12 +30,16 @@ const Stats = ({ good, neutral, bad }) => {
   return (
     <div>
       <h1>statistics</h1>
-      <StatistcLine text="good" votes={good} /> <br />
-      <StatistcLine text="neutral" votes={neutral} /> <br />
-      <StatistcLine text="bad" votes={bad} /> <br />
-      <StatistcLine text="all" votes={all} /> <br />
-      <StatistcLine text="average" votes={average} /> <br />
-      <StatistcLine text="positive" votes={positive} /> %
+      <table>
+        <tbody>
+          <StatistcLine text="good" votes={good} />
+          <StatistcLine text="neutral" votes={neutral} />
+          <StatistcLine text="bad" votes={bad} />
+          <StatistcLine text="all" votes={all} />
+          <StatistcLine text="average" votes={average} />
+          <StatistcLine text="positive" votes={positive + " %"} />
+        </tbody>
+      </table>
     </div>
   );
 };
