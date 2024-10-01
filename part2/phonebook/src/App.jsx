@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 import Form from "./components/Form";
 import Search from "./components/Search";
 import List from "./components/List";
+import Notification from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [search, setSearch] = useState("");
   const [newPerson, setPerson] = useState({ name: "", number: "" });
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService.list().then((data) => setPersons(data));
@@ -31,9 +32,11 @@ const App = () => {
   };
 
   const createPerson = () => {
-    personService
-      .create(newPerson)
-      .then((justCreated) => setPersons(persons.concat(justCreated)));
+    personService.create(newPerson).then((justCreated) => {
+      setPersons(persons.concat(justCreated));
+      setNotification(`Added ${justCreated.name}`);
+      setTimeout(() => setNotification(null), 3000);
+    });
     setPerson({ name: "", number: "" });
   };
 
@@ -47,6 +50,10 @@ const App = () => {
         setPersons(
           persons.map((p) => (p.id !== person.id ? p : updatedPerson)),
         );
+        setNotification(
+          `Updated ${updatedPerson.name}'s number to ${updatedPerson.number}`,
+        );
+        setTimeout(() => setNotification(null), 3000);
       });
     }
   };
@@ -65,6 +72,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notification} />
       <Search onChange={handleSearch} />
       <h2>add a new</h2>
       <Form onSubmit={handleSubmit} obj={newPerson} setObj={setPerson} />
