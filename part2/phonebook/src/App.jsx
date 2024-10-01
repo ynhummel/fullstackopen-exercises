@@ -11,6 +11,7 @@ const App = () => {
   const [search, setSearch] = useState("");
   const [newPerson, setPerson] = useState({ name: "", number: "" });
   const [notification, setNotification] = useState(null);
+  const [notifyError, setNotifyError] = useState(false);
 
   useEffect(() => {
     personService.list().then((data) => setPersons(data));
@@ -19,6 +20,12 @@ const App = () => {
   const filteredPersons = persons.filter((element) =>
     element.name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const notify = (text, isError) => {
+    if (isError) setNotifyError(true);
+    setNotification(text);
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,8 +41,7 @@ const App = () => {
   const createPerson = () => {
     personService.create(newPerson).then((justCreated) => {
       setPersons(persons.concat(justCreated));
-      setNotification(`Added ${justCreated.name}`);
-      setTimeout(() => setNotification(null), 3000);
+      notify(`Added ${justCreated.name}`, false);
     });
     setPerson({ name: "", number: "" });
   };
@@ -46,15 +52,24 @@ const App = () => {
         `${newPerson.name} is already added to the phonebook. replace the old number with a new one?`,
       )
     ) {
-      personService.update(person.id, newPerson).then((updatedPerson) => {
-        setPersons(
-          persons.map((p) => (p.id !== person.id ? p : updatedPerson)),
-        );
-        setNotification(
-          `Updated ${updatedPerson.name}'s number to ${updatedPerson.number}`,
-        );
-        setTimeout(() => setNotification(null), 3000);
-      });
+      personService
+        .update(person.id, newPerson)
+        .then((updatedPerson) => {
+          setPersons(
+            persons.map((p) => (p.id !== person.id ? p : updatedPerson)),
+          );
+          setNotification(
+            `Updated ${updatedPerson.name}'s number to ${updatedPerson.number}`,
+          );
+          setTimeout(() => setNotification(null), 3000);
+        })
+        .catch((error) => {
+          notify(
+            `informations about ${person.name} has already been removed from server`,
+            true,
+          );
+          setPersons(filteredPersons.filter((p) => p.id !== person.id));
+        });
     }
   };
 
@@ -64,7 +79,14 @@ const App = () => {
         .destroy(person.id)
         .then((deletedPerson) =>
           setPersons(filteredPersons.filter((p) => p.id !== deletedPerson.id)),
-        );
+        )
+        .catch((error) => {
+          notify(
+            `informations about ${person.name} has already been removed from server`,
+            true,
+          );
+          setPersons(filteredPersons.filter((p) => p.id !== person.id));
+        });
   };
 
   const handleSearch = (e) => setSearch(e.target.value);
@@ -72,7 +94,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={notification} />
+      <Notification message={notification} error={notifyError} />
       <Search onChange={handleSearch} />
       <h2>add a new</h2>
       <Form onSubmit={handleSubmit} obj={newPerson} setObj={setPerson} />
