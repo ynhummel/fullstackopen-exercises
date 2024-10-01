@@ -9,4 +9,8 @@ const create = (payload) => {
   return axios.post(baseUrl, payload).then((response) => response.data);
 };
 
-export default { list, create };
+const destroy = (id) => {
+  return axios.delete(`${baseUrl}/${id}`).then((response) => response.data);
+};
+
+export default { list, create, destroy };

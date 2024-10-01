@@ -33,6 +33,15 @@ const App = () => {
     }
   };
 
+  const handleDelete = (person) => () => {
+    if (confirm(`Delete ${person.name}`))
+      personService
+        .destroy(person.id)
+        .then((deletedPerson) =>
+          setPersons(filteredPersons.filter((p) => p.id !== deletedPerson.id)),
+        );
+  };
+
   const handleSearch = (e) => setSearch(e.target.value);
 
   return (
@@ -42,7 +51,7 @@ const App = () => {
       <h2>add a new</h2>
       <Form onSubmit={handleSubmit} obj={newPerson} setObj={setPerson} />
       <h2>Numbers</h2>
-      <List array={filteredPersons} />
+      <List array={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };
