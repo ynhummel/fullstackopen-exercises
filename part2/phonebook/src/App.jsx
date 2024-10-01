@@ -24,12 +24,30 @@ const App = () => {
     const person = persons.find((element) => element.name === newPerson.name);
 
     if (person === undefined) {
-      personService
-        .create(newPerson)
-        .then((justCreated) => setPersons(persons.concat(justCreated)));
-      setPerson({ name: "", number: "" });
+      createPerson();
     } else {
-      alert(`${newPerson.name} is already added to the phonebook`);
+      updatePerson(person);
+    }
+  };
+
+  const createPerson = () => {
+    personService
+      .create(newPerson)
+      .then((justCreated) => setPersons(persons.concat(justCreated)));
+    setPerson({ name: "", number: "" });
+  };
+
+  const updatePerson = (person) => {
+    if (
+      confirm(
+        `${newPerson.name} is already added to the phonebook. replace the old number with a new one?`,
+      )
+    ) {
+      personService.update(person.id, newPerson).then((updatedPerson) => {
+        setPersons(
+          persons.map((p) => (p.id !== person.id ? p : updatedPerson)),
+        );
+      });
     }
   };
 
