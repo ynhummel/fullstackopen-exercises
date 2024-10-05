@@ -22,7 +22,8 @@ const App = () => {
   );
 
   const notify = (text, isError) => {
-    if (isError) setNotifyError(true);
+    isError ? setNotifyError(true) : setNotifyError(false);
+
     setNotification(text);
     setTimeout(() => setNotification(null), 3000);
   };
@@ -58,10 +59,10 @@ const App = () => {
           setPersons(
             persons.map((p) => (p.id !== person.id ? p : updatedPerson)),
           );
-          setNotification(
+          notify(
             `Updated ${updatedPerson.name}'s number to ${updatedPerson.number}`,
+            false,
           );
-          setTimeout(() => setNotification(null), 3000);
         })
         .catch((error) => {
           notify(
@@ -77,8 +78,8 @@ const App = () => {
     if (confirm(`Delete ${person.name}`))
       personService
         .destroy(person.id)
-        .then((deletedPerson) =>
-          setPersons(filteredPersons.filter((p) => p.id !== deletedPerson.id)),
+        .then(() =>
+          setPersons(filteredPersons.filter((p) => p.id !== person.id)),
         )
         .catch((error) => {
           notify(
