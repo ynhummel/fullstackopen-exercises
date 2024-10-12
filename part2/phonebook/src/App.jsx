@@ -17,9 +17,11 @@ const App = () => {
     personService.list().then((data) => setPersons(data));
   }, []);
 
-  const filteredPersons = persons.filter((element) =>
-    element.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredPersons = persons.filter((element) => {
+    if (element !== null) {
+      return element.name.toLowerCase().includes(search.toLowerCase());
+    }
+  });
 
   const notify = (text, isError) => {
     isError ? setNotifyError(true) : setNotifyError(false);
@@ -69,6 +71,10 @@ const App = () => {
           );
         })
         .catch((error) => {
+          if (error.name === "AxiosError") {
+            notify(error.response.data.error, true);
+            return;
+          }
           notify(
             `informations about ${person.name} has already been removed from server`,
             true,
