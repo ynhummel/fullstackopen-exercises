@@ -40,10 +40,14 @@ const App = () => {
   };
 
   const createPerson = () => {
-    personService.create(newPerson).then((justCreated) => {
-      setPersons(persons.concat(justCreated));
-      notify(`Added ${justCreated.name}`, false);
-    });
+    personService
+      .create(newPerson)
+      .then((justCreated) => {
+        setPersons(persons.concat(justCreated));
+        notify(`Added ${justCreated.name}`, false);
+      })
+      .catch((error) => notify(error.response.data.error, true));
+
     setPerson({ name: "", number: "" });
   };
 
