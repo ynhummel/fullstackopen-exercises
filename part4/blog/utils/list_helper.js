@@ -1,3 +1,6 @@
+import pkg from 'lodash'
+const { countBy, maxBy, entries } = pkg
+
 const dummy = (blogs) => { return 1 }
 
 const totalLikes = (blogs) => {
@@ -20,4 +23,10 @@ const favoriteBlog = (blogs) => {
   return mostLiked
 }
 
-export default { dummy, totalLikes, favoriteBlog }
+const mostBlogs = (blogs) => {
+
+  const blogCount = pkg(blogs).countBy('author').entries().maxBy(pkg.last)
+  return { author: blogCount[0], blogs: blogCount[1] }
+}
+
+export default { dummy, totalLikes, favoriteBlog, mostBlogs }
