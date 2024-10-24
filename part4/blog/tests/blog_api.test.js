@@ -99,9 +99,32 @@ describe('DELETE blog', () => {
 
   test('can delete blog posts', async () => {
     const response = await api.get('/api/blogs/')
-    console.log(response.body[0]['id'])
 
     await api.delete(`/api/blogs/${response.body[0]['id']}`).expect(204)
+  })
+})
+
+describe('PUT blog', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+    await api
+      .post('/api/blogs/')
+      .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 1 })
+  })
+
+  afterEach(async () => {
+    await Blog.deleteMany({})
+  })
+
+  test('can update blog posts', async () => {
+    const responseCreate = await api.get('/api/blogs/')
+    const response = await api
+      .put(`/api/blogs/${responseCreate.body[0]['id']}`)
+      .send({ title: 'updated title', likes: 1 })
+      .expect(200)
+
+    assert.strictEqual(response.body['title'], 'updated title')
+    assert.strictEqual(response.body['likes'], 1)
   })
 })
 

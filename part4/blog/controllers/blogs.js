@@ -28,4 +28,14 @@ blogRouter.delete('/api/blogs/:id', async (request, response, next) => {
   }
 })
 
+blogRouter.put('/api/blogs/:id', async (request, response, next) => {
+  const { title, likes } = request.body
+  try {
+    const blog = await Blog.findByIdAndUpdate(request.params.id, { title, likes }, { new: true })
+    response.status(200).json(blog)
+  } catch (error) {
+    next(error)
+  }
+})
+
 export default blogRouter
