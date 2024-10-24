@@ -23,6 +23,14 @@ test('there are two posts', async () => {
   assert.strictEqual(response.body.length, initialBlogPosts.length)
 })
 
+test('the id parameter is not underscored', async () => {
+  const response = await api.get('/api/blogs/')
+
+  assert(Object.hasOwn(response.body[0], 'id'))
+  assert(!Object.hasOwn(response.body[0], '_id'))
+  assert(!Object.hasOwn(response.body[0], '__v'))
+})
+
 test('notes are returned as json', async () => {
   await api
     .get('/api/blogs/')
