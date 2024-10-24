@@ -17,6 +17,13 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
 })
 
+test('notes are returned as json', async () => {
+  await api
+    .get('/api/blogs/')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+})
+
 test('there are two posts', async () => {
   const response = await api.get('/api/blogs/')
 
@@ -37,7 +44,7 @@ test('you can post blogs', async () => {
 
   const response = await api
     .post('/api/blogs/')
-    .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 0 })
+    .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 1 })
 
   const getNewResponse = await api.get('/api/blogs/')
   const newLength = getNewResponse.body.length
@@ -47,14 +54,15 @@ test('you can post blogs', async () => {
   assert.strictEqual(response.body['title'], 'post test')
   assert.strictEqual(response.body['author'], 'node:test')
   assert.strictEqual(response.body['url'], 'local.test')
-  assert.strictEqual(response.body['likes'], 0)
+  assert.strictEqual(response.body['likes'], 1)
 })
 
-test('notes are returned as json', async () => {
-  await api
-    .get('/api/blogs/')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+test('likes default to zero', async () => {
+  const response = await api
+    .post('/api/blogs/')
+    .send({ title: 'post test', author: 'node:test', url: 'local.test' })
+
+  assert.strictEqual(response.body['likes'], 0)
 })
 
 after(async () => {
