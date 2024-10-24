@@ -57,6 +57,20 @@ test('you can post blogs', async () => {
   assert.strictEqual(response.body['likes'], 1)
 })
 
+test('request without title or url should return 400', async () => {
+  const responseTitle = await api
+    .post('/api/blogs/')
+    .send({ author: 'node:test', url: 'local.test' })
+
+  const responseUrl = await api
+    .post('/api/blogs/')
+    .send({ title: 'post test', author: 'node:test' })
+
+
+  assert.strictEqual(responseTitle.status, 400)
+  assert.strictEqual(responseUrl.status, 400)
+})
+
 test('likes default to zero', async () => {
   const response = await api
     .post('/api/blogs/')
