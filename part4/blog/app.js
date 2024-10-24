@@ -10,9 +10,12 @@ import logger from './utils/logger.js'
 import middleware from './utils/middleware.js'
 
 logger.info('connecting to database...')
-mongoose.connect(config.MONGODB_URI)
-  .then(() => logger.info('connected to MongoDB'))
-  .catch(error => logger.error('error connecting to MongoDB: ', error.message))
+try {
+  await mongoose.connect(config.MONGODB_URI)
+  logger.info('connected to MongoDB')
+} catch (error) {
+  logger.error('error connecting to MongoDB: ', error.message)
+}
 
 app.use(cors())
 app.use(express.json())
