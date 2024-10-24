@@ -31,6 +31,25 @@ test('the id parameter is not underscored', async () => {
   assert(!Object.hasOwn(response.body[0], '__v'))
 })
 
+test('you can post blogs', async () => {
+  const getResponse = await api.get('/api/blogs/')
+  const oldLength = getResponse.body.length
+
+  const response = await api
+    .post('/api/blogs/')
+    .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 0 })
+
+  const getNewResponse = await api.get('/api/blogs/')
+  const newLength = getNewResponse.body.length
+
+  assert.strictEqual(oldLength + 1, newLength)
+  assert.strictEqual(response.status, 201)
+  assert.strictEqual(response.body['title'], 'post test')
+  assert.strictEqual(response.body['author'], 'node:test')
+  assert.strictEqual(response.body['url'], 'local.test')
+  assert.strictEqual(response.body['likes'], 0)
+})
+
 test('notes are returned as json', async () => {
   await api
     .get('/api/blogs/')
