@@ -4,8 +4,10 @@ const app = express()
 import cors from 'cors'
 import mongoose from 'mongoose'
 
-import config from './utils/config.js'
 import blogRouter from './controllers/blogs.js'
+import userRouter from './controllers/users.js'
+
+import config from './utils/config.js'
 import logger from './utils/logger.js'
 import middleware from './utils/middleware.js'
 
@@ -21,7 +23,8 @@ app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
 
-app.use(blogRouter)
+app.use('/api/blogs' , blogRouter)
+app.use('/api/users' , userRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

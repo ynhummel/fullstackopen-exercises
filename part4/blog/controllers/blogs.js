@@ -3,12 +3,12 @@ const blogRouter = Router()
 
 import Blog from '../models/blog.js'
 
-blogRouter.get('/api/blogs', async (request, response) => {
+blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({})
   response.json(blogs)
 })
 
-blogRouter.post('/api/blogs', async (request, response, next) => {
+blogRouter.post('/', async (request, response, next) => {
   const blog = new Blog(request.body)
 
   try {
@@ -19,7 +19,7 @@ blogRouter.post('/api/blogs', async (request, response, next) => {
   }
 })
 
-blogRouter.delete('/api/blogs/:id', async (request, response, next) => {
+blogRouter.delete('/:id', async (request, response, next) => {
   try {
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
@@ -28,7 +28,7 @@ blogRouter.delete('/api/blogs/:id', async (request, response, next) => {
   }
 })
 
-blogRouter.put('/api/blogs/:id', async (request, response, next) => {
+blogRouter.put('/:id', async (request, response, next) => {
   const { title, likes } = request.body
   try {
     const blog = await Blog.findByIdAndUpdate(request.params.id, { title, likes }, { new: true })
