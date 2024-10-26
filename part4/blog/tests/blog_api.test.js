@@ -5,6 +5,7 @@ import supertest from 'supertest'
 
 import app from '../app.js'
 import Blog from '../models/blog.js'
+import User from '../models/user.js'
 import { initialBlogPosts } from './test_helper.js'
 
 const api = supertest(app)
@@ -45,6 +46,14 @@ describe('when there are some blogs in database', async () => {
 })
 
 describe('POST blog', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+    await api
+      .post('/api/users/')
+      .send({ username: 'test-user', name: 'Tester User', password: 'testpassword' })
+      .expect(201)
+  })
+
   afterEach(async () => {
     await Blog.deleteMany({})
   })
