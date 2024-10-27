@@ -1,4 +1,6 @@
 import logger from './logger.js'
+import jwt from 'jsonwebtoken'
+import User from '../models/user.js'
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -8,12 +10,23 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-const tokenExtractor = (request, response, next) => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    request.token = authorization.replace('Bearer ', '')
+const userExtractor = async (request, response, next) => {
+  try {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.startsWith('Bearer ')) {
+      const token = authorization.replace('Bearer ', '')
+      const decodedToken = jwt.verify(token, process.env.SECRET)
+
+      if (!decodedToken.id) {
+        throw new jwt.JsonWebTokenError('Invalid token')
+      }
+
+      request.user = await User.findById(decodedToken.id)
+    }
+    next()
+  } catch (error) {
+    next(error)
   }
-  next()
 }
 
 const unknownEndpoint = (request, response) => {
@@ -36,4 +49,4 @@ const errorHandler = (error, request, response, next) => {
   }
 }
 
-export default { requestLogger, unknownEndpoint, errorHandler, tokenExtractor }
+export default { requestLogger, unknownEndpoint, errorHandler, userExtractor }
