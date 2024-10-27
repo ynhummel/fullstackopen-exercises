@@ -31,9 +31,9 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({ error: 'invalid token' })
   } else if (error.name === 'TokenExpiredError') {
     return response.status(401).json({ error: 'token expired' })
+  } else {
+    return response.status(500).json({ error: 'internal server error' })
   }
-
-  next(error)
 }
 
 export default { requestLogger, unknownEndpoint, errorHandler, tokenExtractor }

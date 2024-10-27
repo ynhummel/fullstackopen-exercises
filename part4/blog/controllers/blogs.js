@@ -33,6 +33,17 @@ blogRouter.post('/', async (request, response, next) => {
 
 blogRouter.delete('/:id', async (request, response, next) => {
   try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    const blog = await Blog.findById(request.params.id)
+    if (blog.user.toString() === decodedToken.id) {
+      await Blog.findByIdAndDelete(blog.id)
+    } else {
+      return response.status(401).json({ error: 'unable to delete another user blog' })
+    }
+
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
   } catch (error) {
