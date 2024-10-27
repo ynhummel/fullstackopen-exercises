@@ -6,7 +6,7 @@ import supertest from 'supertest'
 import app from '../app.js'
 import Blog from '../models/blog.js'
 import User from '../models/user.js'
-import { initialBlogPosts } from './test_helper.js'
+import { authToken, initialBlogPosts } from './test_helper.js'
 
 const api = supertest(app)
 
@@ -59,11 +59,13 @@ describe('POST blog', () => {
   })
 
   test('you can post blogs', async () => {
+    const token = await authToken()
     const getResponse = await api.get('/api/blogs/')
     const oldLength = getResponse.body.length
 
     const response = await api
       .post('/api/blogs/')
+      .set('Authorization', `Bearer ${token}`)
       .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 1 })
 
     const getNewResponse = await api.get('/api/blogs/')
@@ -78,20 +80,25 @@ describe('POST blog', () => {
   })
 
   test('request without title or url should return 400', async () => {
+    const token = await authToken()
     await api
       .post('/api/blogs/')
+      .set('Authorization', `Bearer ${token}`)
       .send({ author: 'node:test', url: 'local.test' })
       .expect(400)
 
     await api
       .post('/api/blogs/')
+      .set('Authorization', `Bearer ${token}`)
       .send({ title: 'post test', author: 'node:test' })
       .expect(400)
   })
 
   test('likes default to zero', async () => {
+    const token = await authToken()
     const response = await api
       .post('/api/blogs/')
+      .set('Authorization', `Bearer ${token}`)
       .send({ title: 'post test', author: 'node:test', url: 'local.test' })
 
     assert.strictEqual(response.body['likes'], 0)
@@ -100,24 +107,32 @@ describe('POST blog', () => {
 
 describe('DELETE blog', () => {
   beforeEach(async () => {
+    const token = await authToken()
     await Blog.deleteMany({})
     await api
       .post('/api/blogs/')
+      .set('Authorization', `Bearer ${token}`)
       .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 1 })
   })
 
   test('can delete blog posts', async () => {
+    const token = await authToken()
     const response = await api.get('/api/blogs/')
 
-    await api.delete(`/api/blogs/${response.body[0]['id']}`).expect(204)
+    await api
+      .delete(`/api/blogs/${response.body[0]['id']}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204)
   })
 })
 
 describe('PUT blog', () => {
   beforeEach(async () => {
+    const token = await authToken()
     await Blog.deleteMany({})
     await api
       .post('/api/blogs/')
+      .set('Authorization', `Bearer ${token}`)
       .send({ title: 'post test', author: 'node:test', url: 'local.test', likes: 1 })
   })
 
@@ -126,10 +141,12 @@ describe('PUT blog', () => {
   })
 
   test('can update blog posts', async () => {
+    const token = await authToken()
     const responseCreate = await api.get('/api/blogs/')
     const response = await api
       .put(`/api/blogs/${responseCreate.body[0]['id']}`)
       .send({ title: 'updated title', likes: 1 })
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
 
     assert.strictEqual(response.body['title'], 'updated title')
