@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 
 import blogRouter from './controllers/blogs.js'
 import userRouter from './controllers/users.js'
+import loginRouter from './controllers/login.js'
 
 import config from './utils/config.js'
 import logger from './utils/logger.js'
@@ -23,8 +24,9 @@ app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
 
-app.use('/api/blogs' , blogRouter)
-app.use('/api/users' , userRouter)
+app.use('/api/blogs', blogRouter)
+app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
